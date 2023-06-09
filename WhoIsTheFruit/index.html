@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adivinhe a Fruta</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+
+  <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+  <div id="app">
+    <div class="modal" v-if="modalOpen">
+      <div class="content">
+        <h1>{{ message }}</h1>
+        <h2>TENTE NOVAMENTE</h2>
+        <button @click="resetPage">Tentar novamente</button>
+      </div>
+    </div>
+
+    <section class="container">
+      <div id="container-image"></div>
+      <main class="content">
+        <div v-if="mostrarResultado">
+          <img src="./assets/empty-fruit.jpeg">
+        </div>
+  
+        <ul class="hint-list">
+          <li v-for="(hint, index) in hints[frutaSorteada]" :key="index" v-if="index < currentIndexHint">
+            <p>Dica {{ index + 1}}: {{ hint }}</p>
+          </li>
+        </ul>
+  
+        <div class="input-group">
+          <input type="text" v-model="frutaAdivinhada" placeholder="Digite a fruta">
+          <button @click="verificarAdivinhacao">Verificar</button>
+        </div>
+  
+        <ul class="heart-list">
+          <li v-for="(heart, index) in hearts" :key="index" v-html="heart.content"></li>
+        </ul>
+      </main>
+    </section>
+
+
+    <p v-if="mostrarResultado">{{ resultado }}</p>
+  </div>
+
+  <script>
+    new Vue({
+      el: "#app",
+      data() {
+        return {
+          hearts: [
+            { content: '<div class="icon"></div>' },
+            { content: '<div class="icon"></div>' },
+            { content: '<div class="icon"></div>' },
+          ],
+          frutas: [
+            "Abacate",
+            "Abacaxi",
+            "Açaí",
+            "Banana",
+            "Caju",
+            "Coco",
+            "Goiaba",
+            "Laranja",
+            "Limão",
+            "Maçã",
+            "Mamão",
+            "Manga",
+            "Maracujá",
+            "Pera",
+            "Uva",
+          ],
+          hints: {
+            "Abacate": ["Possui 7 letras", "Fruta alongada e curvada", "Possui uma casca verde e rugosa"],
+            "Abacaxi": ["Possui 7 letras", "Fruta tropical com casca espinhosa", "É conhecida pelo seu sabor ácido e doce"],
+            "Açaí": ["Possui 4 letras", "Fruta roxa e pequena encontrada na região amazônica", "É amplamente utilizado para fazer açaí na tigela"],
+            "Banana": ["Possui 6 letras", "Fruta alongada e curvada", "Casca amarela que pode ser descascada"],
+            "Caju": ["Possui 4 letras", "Fruta tropical comum no Brasil e na Índia", "Possui um pedúnculo alongado e uma castanha"],
+            "Coco": ["Possui 4 letras", "Fruta tropical com casca dura e fibrosa", "Contém água de coco refrescante e polpa branca"],
+            "Goiaba": ["Possui 6 letras", "Fruta de forma arredondada ou oval com casca verde ou amarela", "Polpa de cor rosa, vermelha ou branca"],
+            "Laranja": ["Possui 7 letras", "Fruta arredondada e cítrica", "Casca laranja e fácil de descascar"],
+            "Limão": ["Possui 5 letras", "Fruta cítrica de forma arredondada ou oval", "Casca amarela ou verde e polpa ácida"],
+            "Maçã": ["Possui 5 letras", "Fruta redonda com casca colorida", "Polpa crocante e suculenta"],
+            "Mamão": ["Possui 5 letras", "Fruta de formato alongado, com casca fina e lisa", "Polpa suculenta e macia, geralmente de cor laranja"],
+            "Manga": ["Possui 5 letras", "Tem 5 letras", "Semente grande e achatada"],
+            "Maracujá": ["Possui 8 letras", "Fruta de casca enrugada e cor amarela ou roxa", "Polpa suculenta e cheia de sementes"],
+            "Pera": ["Possui 4 letras", "Fruta com formato de pera", "Casca fina e polpa macia"],
+            "Uva": ["Possui 3 letras", "Pequenas frutas redondas em cachos", "Polpa suculenta e sabor doce ou ácido"]
+          },
+          frutaSorteada: "",
+          frutaAdivinhada: "",
+          resultado: "",
+          mostrarResultado: true,
+          remainingHearts: 3,
+          currentIndexHint: 0,
+          modalOpen: false,
+          message: "",
+        };
+      },
+      methods: {
+        resetPage() {
+          location.reload();
+        },
+        sortearFruta() {
+          const indiceSorteado = Math.floor(Math.random() * this.frutas.length);
+          this.currentIndexHint++;
+          this.frutaSorteada = this.frutas[indiceSorteado];
+        },
+        verificarAdivinhacao() {
+          if (this.frutaAdivinhada.toLowerCase() === this.frutaSorteada.toLowerCase()) {
+            this.modalOpen = true;
+            this.message = "PARABÉNS!! Você acertou! ";
+          } else {
+            this.remainingHearts--;
+            if (this.remainingHearts >= 0) {
+              this.hearts[this.remainingHearts].content = '<div class="icon empty"></div>';
+              this.currentIndexHint++;
+            }
+            if (this.remainingHearts == 0) {
+              this.message = "PERDEU!!";
+              this.modalOpen = true;
+            }
+        
+
+          }
+          this.mostrarResultado = true;
+        },
+      },
+      mounted() {
+        this.sortearFruta();
+      }
+    });
+  </script>
+</body>
+
+</html>
+''
